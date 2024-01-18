@@ -13,30 +13,31 @@ export default function App() {
     setCurrent(prev => prev + n);
   }
   const handleOperatorClick = (o: Operator) => {
+    const currNum = Number.parseInt(current);
     switch (o) {
       case '+':
       case '-':
         if (operator === '+') {
-          setPrev(prev => prev + temp + Number.parseInt(current));
+          setPrev(prev => prev + temp + currNum);
         } else if (operator === '-') {
-          setPrev(prev => prev + temp - Number.parseInt(current));
+          setPrev(prev => prev + temp - currNum);
         } else if (operator === '*') {
-          setPrev(prev => prev + temp * Number.parseInt(current));
+          setPrev(prev => prev + temp * currNum);
         } else {
-          setPrev(prev => prev + temp / Number.parseInt(current));
+          setPrev(prev => prev + temp / currNum);
         }
         setTemp(0);
         break;
       case '*':
       case '/':
         if (operator === '*'){
-          setTemp(prev => prev * Number.parseInt(current));
+          setTemp(prev => prev * currNum);
         } else if (operator === '/') {
-          setTemp(prev => prev / Number.parseInt(current));
+          setTemp(prev => prev / currNum);
         } else if (operator === '+') {
-          setTemp(Number.parseInt(current));
+          setTemp(currNum);
         } else {
-          setTemp(-Number.parseInt(current))
+          setTemp(-currNum);
         }
       default:
         break;
@@ -89,9 +90,9 @@ export default function App() {
 const CALCULATOR_PROPS = {
   buttonSize: 80,
   fontSize: 36,
-  operator: { bgColor: "rgb(240, 155, 44)", textColor: "white" },
-  numpad: { bgColor: "rgb(45, 45, 45)", textColor: "white" },
-  other: { bgColor: "rgb(155, 155, 155)", textColor: "black" },
+  operator: { bgColor: "hsl(34, 86.7%, 55.7%)", pressedBgColor: "hsl(34, 86.7%, 80%)", textColor: "white" },
+  numpad: { bgColor: "hsl(0, 0.0%, 17.6%)", pressedBgColor: "hsl(0, 0%, 40%)", textColor: "white" },
+  other: { bgColor: "hsl(0, 0.0%, 60.8%)", pressedBgColor: "hsl(0, 0%, 90%)", textColor: "black" },
 };
 
 function CalcButton({
@@ -110,9 +111,9 @@ function CalcButton({
   const props = CALCULATOR_PROPS[color];
   return (
     <Pressable
-      style={[
+      style={({pressed}) => [
         {
-          backgroundColor: props.bgColor,
+          backgroundColor: pressed? props.pressedBgColor:props.bgColor,
           width: size,
           height: CALCULATOR_PROPS.buttonSize,
           borderRadius: CALCULATOR_PROPS.buttonSize / 2,
