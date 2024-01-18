@@ -12,7 +12,7 @@ export default function App() {
   const [displayType, setDisplayType] = useState<0 | 1 | 2>(1);
 
   const handleNumpadClick = (n: string) => {
-    operator === '=' && reset();
+    operator === "=" && reset();
     setCurrent((prev) => prev + n);
     setDisplayType(0);
   };
@@ -60,7 +60,47 @@ export default function App() {
   const handleOtherClick = (n: string) => {
     switch (n) {
       case "AC":
-        reset(); 
+        reset();
+        break;
+      case "%":
+        handlePercentage();
+        break;
+      case "+/-":
+        handleSign();
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handlePercentage = () => {
+    switch (displayType) {
+      case 0:
+        setCurrent((prev) => Number.parseFloat(prev) / 100 + "");
+        break;
+      case 1:
+        prevRef.current = prevRef.current / 100;
+        break;
+      case 2:
+        setTemp((prev) => prev / 100);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleSign = () => {
+    switch (displayType) {
+      case 0:
+        setCurrent((prev) => Number.parseFloat(prev) * -1 + "");
+        break;
+      case 1:
+        prevRef.current = prevRef.current * -1;
+        break;
+      case 2:
+        setTemp((prev) => prev * -1);
+        break;
+      default:
         break;
     }
   };
@@ -69,8 +109,8 @@ export default function App() {
     setOperator("+");
     setCurrent("");
     setDisplayType(1);
-    prevRef.current = 0; 
-  }
+    prevRef.current = 0;
+  };
   const displayContent =
     displayType === 0 ? current : displayType === 1 ? prevRef.current : temp;
   return (
@@ -89,7 +129,7 @@ export default function App() {
           />
           <CalcButton onClick={handleOtherClick} content="+/-" color="other" />
           <CalcButton
-            onClick={() => handleOperatorClick("/")}
+            onClick={() => handleOtherClick("%")}
             content="%"
             color="other"
           />
