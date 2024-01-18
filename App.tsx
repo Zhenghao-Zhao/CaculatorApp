@@ -1,86 +1,129 @@
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { StyleSheet, Text, View, Pressable, SafeAreaView } from "react-native";
 
-type Operator = "+" | "-" | "*" | "/" | "="
+type Operator = "+" | "-" | "*" | "/" | "=";
 
 export default function App() {
-  const [prev, setPrev] = useState(0);
-  const [current, setCurrent] = useState('');
+  const prevRef = useRef(0);
+  const [current, setCurrent] = useState("");
   const [temp, setTemp] = useState(0);
-  const [operator, setOperator] = useState<Operator>('+');
+  const [operator, setOperator] = useState<Operator>("+");
+  const [calFlag, setCalFlag] = useState(false);
+
   const handleNumpadClick = (n: string) => {
-    setCurrent(prev => prev + n);
-  }
+    setCurrent((prev) => prev + n);
+  };
+
   const handleOperatorClick = (o: Operator) => {
-    const currNum = Number.parseInt(current);
+    const currNum = current === "" ? 0 : Number.parseInt(current);
     switch (o) {
-      case '+':
-      case '-':
-        if (operator === '+') {
-          setPrev(prev => prev + temp + currNum);
-        } else if (operator === '-') {
-          setPrev(prev => prev + temp - currNum);
-        } else if (operator === '*') {
-          setPrev(prev => prev + temp * currNum);
-        } else {
-          setPrev(prev => prev + temp / currNum);
+      case "=":
+      case "+":
+      case "-":
+        if (operator === "+") {
+          prevRef.current += currNum;
+        } else if (operator === "-") {
+          prevRef.current -= currNum;
+        } else if (operator === "*") {
+          prevRef.current += temp * currNum;
+        } else if (operator === "/") {
+          prevRef.current += temp / currNum;
         }
         setTemp(0);
         break;
-      case '*':
-      case '/':
-        if (operator === '*'){
-          setTemp(prev => prev * currNum);
-        } else if (operator === '/') {
-          setTemp(prev => prev / currNum);
-        } else if (operator === '+') {
+      case "*":
+      case "/":
+        if (operator === "*") {
+          setTemp((prev) => prev * currNum);
+        } else if (operator === "/") {
+          setTemp((prev) => prev / currNum);
+        } else if (operator === "+") {
           setTemp(currNum);
-        } else {
+        } else if (operator === "-") {
           setTemp(-currNum);
+        } else {
+          setTemp(prevRef.current);
+          prevRef.current = 0;
         }
       default:
         break;
     }
     setOperator(o);
-    setCurrent('')
-  }
-  const handleOtherClick = (n: string) => {} 
+    setCurrent("");
+  };
+
+  const handleOtherClick = (n: string) => {
+    switch (n) {
+      case 'AC':
+        setTemp(0);
+        setOperator('+');
+        setCurrent('');
+        prevRef.current = 0;
+        break;
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.col}>
-        <View style={[styles.row, {justifyContent: "flex-end"}]}>
-          <Text style={{ color: "white", fontSize: 100 }}>{current || prev}</Text>
+        <View style={[styles.row, { justifyContent: "flex-end" }]}>
+          <Text style={{ color: "white", fontSize: 100 }}>
+            {prevRef.current}
+          </Text>
         </View>
         <View style={styles.row}>
-          <CalcButton onClick={handleOtherClick} content="AC" color="other" />
+          <CalcButton onClick={() => handleOtherClick('AC')} content="AC" color="other" />
           <CalcButton onClick={handleOtherClick} content="+/-" color="other" />
-          <CalcButton onClick={() => handleOperatorClick('/')} content="%" color="other" />
-          <CalcButton onClick={() => handleOperatorClick('/')} content="/" color="operator" />
+          <CalcButton
+            onClick={() => handleOperatorClick("/")}
+            content="%"
+            color="other"
+          />
+          <CalcButton
+            onClick={() => handleOperatorClick("/")}
+            content="/"
+            color="operator"
+          />
         </View>
         <View style={styles.row}>
           <CalcButton onClick={handleNumpadClick} content="7" color="numpad" />
           <CalcButton onClick={handleNumpadClick} content="8" color="numpad" />
           <CalcButton onClick={handleNumpadClick} content="9" color="numpad" />
-          <CalcButton onClick={() => handleOperatorClick('*')} content="*" color="operator" />
+          <CalcButton
+            onClick={() => handleOperatorClick("*")}
+            content="*"
+            color="operator"
+          />
         </View>
         <View style={styles.row}>
           <CalcButton onClick={handleNumpadClick} content="4" color="numpad" />
           <CalcButton onClick={handleNumpadClick} content="5" color="numpad" />
           <CalcButton onClick={handleNumpadClick} content="6" color="numpad" />
-          <CalcButton onClick={() => handleOperatorClick('-')} content="-" color="operator" />
+          <CalcButton
+            onClick={() => handleOperatorClick("-")}
+            content="-"
+            color="operator"
+          />
         </View>
         <View style={styles.row}>
           <CalcButton onClick={handleNumpadClick} content="1" color="numpad" />
           <CalcButton onClick={handleNumpadClick} content="2" color="numpad" />
           <CalcButton onClick={handleNumpadClick} content="3" color="numpad" />
-          <CalcButton onClick={() => handleOperatorClick('+')} content="+" color="operator" />
+          <CalcButton
+            onClick={() => handleOperatorClick("+")}
+            content="+"
+            color="operator"
+          />
         </View>
         <View style={styles.row}>
           <CalcButton onClick={handleNumpadClick} content="0" color="numpad" />
           <CalcButton onClick={handleNumpadClick} content="." color="numpad" />
-          <CalcButton onClick={() => handleOperatorClick('=')} content="=" color="operator" />
+          <CalcButton
+            onClick={() => handleOperatorClick("=")}
+            content="="
+            color="operator"
+          />
         </View>
       </View>
     </SafeAreaView>
@@ -90,9 +133,21 @@ export default function App() {
 const CALCULATOR_PROPS = {
   buttonSize: 80,
   fontSize: 36,
-  operator: { bgColor: "hsl(34, 86.7%, 55.7%)", pressedBgColor: "hsl(34, 86.7%, 80%)", textColor: "white" },
-  numpad: { bgColor: "hsl(0, 0.0%, 17.6%)", pressedBgColor: "hsl(0, 0%, 40%)", textColor: "white" },
-  other: { bgColor: "hsl(0, 0.0%, 60.8%)", pressedBgColor: "hsl(0, 0%, 90%)", textColor: "black" },
+  operator: {
+    bgColor: "hsl(34, 86.7%, 55.7%)",
+    pressedBgColor: "hsl(34, 86.7%, 80%)",
+    textColor: "white",
+  },
+  numpad: {
+    bgColor: "hsl(0, 0.0%, 17.6%)",
+    pressedBgColor: "hsl(0, 0%, 40%)",
+    textColor: "white",
+  },
+  other: {
+    bgColor: "hsl(0, 0.0%, 60.8%)",
+    pressedBgColor: "hsl(0, 0%, 90%)",
+    textColor: "black",
+  },
 };
 
 function CalcButton({
@@ -111,9 +166,9 @@ function CalcButton({
   const props = CALCULATOR_PROPS[color];
   return (
     <Pressable
-      style={({pressed}) => [
+      style={({ pressed }) => [
         {
-          backgroundColor: pressed? props.pressedBgColor:props.bgColor,
+          backgroundColor: pressed ? props.pressedBgColor : props.bgColor,
           width: size,
           height: CALCULATOR_PROPS.buttonSize,
           borderRadius: CALCULATOR_PROPS.buttonSize / 2,
