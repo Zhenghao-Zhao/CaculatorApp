@@ -5,7 +5,7 @@ import { StyleSheet, Text, View, Pressable, SafeAreaView } from "react-native";
 type Operator = "+" | "-" | "*" | "/" | "=";
 
 export default function App() {
-  const prevRef = useRef(0);
+  const [prev, setPrev] = useState(0);
   const [current, setCurrent] = useState("");
   const [temp, setTemp] = useState(0);
   const [operator, setOperator] = useState<Operator>("+");
@@ -24,13 +24,13 @@ export default function App() {
       case "+":
       case "-":
         if (operator === "+") {
-          prevRef.current += currNum;
+          setPrev(prev => prev + currNum)
         } else if (operator === "-") {
-          prevRef.current -= currNum;
+          setPrev(prev => prev - currNum)
         } else if (operator === "*") {
-          prevRef.current += temp * currNum;
+          setPrev(prev => prev + temp * currNum)
         } else if (operator === "/") {
-          prevRef.current += temp / currNum;
+          setPrev(prev => prev + temp / currNum)
         }
         setTemp(0);
         setDisplayType(1);
@@ -46,8 +46,8 @@ export default function App() {
         } else if (operator === "-") {
           setTemp(-currNum);
         } else {
-          setTemp(prevRef.current);
-          prevRef.current = 0;
+          setTemp(prev);
+          setPrev(0);
         }
         setDisplayType(2);
       default:
@@ -79,7 +79,7 @@ export default function App() {
         setCurrent((prev) => Number.parseFloat(prev) / 100 + "");
         break;
       case 1:
-        prevRef.current = prevRef.current / 100;
+        setPrev(prev => prev / 100)
         break;
       case 2:
         setTemp((prev) => prev / 100);
@@ -95,7 +95,7 @@ export default function App() {
         setCurrent((prev) => Number.parseFloat(prev) * -1 + "");
         break;
       case 1:
-        prevRef.current = prevRef.current * -1;
+        setPrev(prev => prev * -1);
         break;
       case 2:
         setTemp((prev) => prev * -1);
@@ -109,10 +109,10 @@ export default function App() {
     setOperator("+");
     setCurrent("");
     setDisplayType(1);
-    prevRef.current = 0;
+    setPrev(0);
   };
   const displayContent =
-    displayType === 0 ? current : displayType === 1 ? prevRef.current : temp;
+    displayType === 0 ? current : displayType === 1 ? prev : temp;
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.col}>
@@ -127,7 +127,11 @@ export default function App() {
             content="AC"
             color="other"
           />
-          <CalcButton onClick={handleOtherClick} content="+/-" color="other" />
+          <CalcButton
+            onClick={() => handleOtherClick("+/-")}
+            content="+/-"
+            color="other"
+          />
           <CalcButton
             onClick={() => handleOtherClick("%")}
             content="%"
