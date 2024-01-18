@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View, Pressable, SafeAreaView } from "react-native";
 
 type Operator = "+" | "-" | "*" | "/" | "=";
@@ -9,14 +9,28 @@ export default function App() {
   const [current, setCurrent] = useState("");
   const [temp, setTemp] = useState(0);
   const [operator, setOperator] = useState<Operator>("+");
+  const [display, setDisplay] = useState<0 | 1 | 2>(1);
   const [calFlag, setCalFlag] = useState(false);
+
+  // useEffect(() => {
+  //   setDisplay(current);
+  // }, [current])
+
+  // useEffect(() => {
+  //   if (operator === '+' || operator === '-' || operator === '='){
+  //     setDisplay(prevRef.current);
+  //   } else {
+  //     setDisplay(temp);
+  //   }
+  // }, [operator])
 
   const handleNumpadClick = (n: string) => {
     setCurrent((prev) => prev + n);
+    setDisplay(0)
   };
 
   const handleOperatorClick = (o: Operator) => {
-    const currNum = current === "" ? 0 : Number.parseInt(current);
+    const currNum = current === "" ? 0 : Number.parseFloat(current);
     switch (o) {
       case "=":
       case "+":
@@ -31,6 +45,7 @@ export default function App() {
           prevRef.current += temp / currNum;
         }
         setTemp(0);
+        setDisplay(1)
         break;
       case "*":
       case "/":
@@ -46,6 +61,7 @@ export default function App() {
           setTemp(prevRef.current);
           prevRef.current = 0;
         }
+        setDisplay(2)
       default:
         break;
     }
@@ -59,17 +75,18 @@ export default function App() {
         setTemp(0);
         setOperator('+');
         setCurrent('');
+        setDisplay(1);
         prevRef.current = 0;
         break;
     }
   };
-
+  const displayContent = display === 0? current : (display === 1? prevRef.current : temp)
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.col}>
         <View style={[styles.row, { justifyContent: "flex-end" }]}>
           <Text style={{ color: "white", fontSize: 100 }}>
-            {prevRef.current}
+            {displayContent}
           </Text>
         </View>
         <View style={styles.row}>
