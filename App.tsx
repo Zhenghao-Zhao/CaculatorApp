@@ -9,24 +9,12 @@ export default function App() {
   const [current, setCurrent] = useState("");
   const [temp, setTemp] = useState(0);
   const [operator, setOperator] = useState<Operator>("+");
-  const [display, setDisplay] = useState<0 | 1 | 2>(1);
-  const [calFlag, setCalFlag] = useState(false);
-
-  // useEffect(() => {
-  //   setDisplay(current);
-  // }, [current])
-
-  // useEffect(() => {
-  //   if (operator === '+' || operator === '-' || operator === '='){
-  //     setDisplay(prevRef.current);
-  //   } else {
-  //     setDisplay(temp);
-  //   }
-  // }, [operator])
+  const [displayType, setDisplayType] = useState<0 | 1 | 2>(1);
 
   const handleNumpadClick = (n: string) => {
+    operator === '=' && reset();
     setCurrent((prev) => prev + n);
-    setDisplay(0)
+    setDisplayType(0);
   };
 
   const handleOperatorClick = (o: Operator) => {
@@ -45,7 +33,7 @@ export default function App() {
           prevRef.current += temp / currNum;
         }
         setTemp(0);
-        setDisplay(1)
+        setDisplayType(1);
         break;
       case "*":
       case "/":
@@ -61,7 +49,7 @@ export default function App() {
           setTemp(prevRef.current);
           prevRef.current = 0;
         }
-        setDisplay(2)
+        setDisplayType(2);
       default:
         break;
     }
@@ -71,16 +59,20 @@ export default function App() {
 
   const handleOtherClick = (n: string) => {
     switch (n) {
-      case 'AC':
-        setTemp(0);
-        setOperator('+');
-        setCurrent('');
-        setDisplay(1);
-        prevRef.current = 0;
+      case "AC":
+        reset(); 
         break;
     }
   };
-  const displayContent = display === 0? current : (display === 1? prevRef.current : temp)
+  const reset = () => {
+    setTemp(0);
+    setOperator("+");
+    setCurrent("");
+    setDisplayType(1);
+    prevRef.current = 0; 
+  }
+  const displayContent =
+    displayType === 0 ? current : displayType === 1 ? prevRef.current : temp;
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.col}>
@@ -90,7 +82,11 @@ export default function App() {
           </Text>
         </View>
         <View style={styles.row}>
-          <CalcButton onClick={() => handleOtherClick('AC')} content="AC" color="other" />
+          <CalcButton
+            onClick={() => handleOtherClick("AC")}
+            content="AC"
+            color="other"
+          />
           <CalcButton onClick={handleOtherClick} content="+/-" color="other" />
           <CalcButton
             onClick={() => handleOperatorClick("/")}
