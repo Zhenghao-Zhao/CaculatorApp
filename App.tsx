@@ -1,5 +1,4 @@
-import { StatusBar } from "expo-status-bar";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { StyleSheet, Text, View, Pressable, SafeAreaView } from "react-native";
 
 type Operator = "+" | "-" | "*" | "/" | "=";
