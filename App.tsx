@@ -24,13 +24,13 @@ export default function App() {
       case "+":
       case "-":
         if (operator === "+") {
-          setPrev(prev => prev + currNum)
+          setPrev((prev) => prev + currNum);
         } else if (operator === "-") {
-          setPrev(prev => prev - currNum)
+          setPrev((prev) => prev - currNum);
         } else if (operator === "*") {
-          setPrev(prev => prev + temp * currNum)
+          setPrev((prev) => prev + temp * currNum);
         } else if (operator === "/") {
-          setPrev(prev => prev + temp / currNum)
+          setPrev((prev) => prev + temp / currNum);
         }
         setTemp(0);
         setDisplayType(1);
@@ -79,7 +79,7 @@ export default function App() {
         setCurrent((prev) => Number.parseFloat(prev) / 100 + "");
         break;
       case 1:
-        setPrev(prev => prev / 100)
+        setPrev((prev) => prev / 100);
         break;
       case 2:
         setTemp((prev) => prev / 100);
@@ -95,7 +95,7 @@ export default function App() {
         setCurrent((prev) => Number.parseFloat(prev) * -1 + "");
         break;
       case 1:
-        setPrev(prev => prev * -1);
+        setPrev((prev) => prev * -1);
         break;
       case 2:
         setTemp((prev) => prev * -1);
@@ -117,7 +117,11 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <View style={styles.col}>
         <View style={[styles.row, { justifyContent: "flex-end" }]}>
-          <Text style={{ color: "white", fontSize: 100 }}>
+          <Text
+            style={{ color: "white", fontSize: 100 }}
+            adjustsFontSizeToFit
+            numberOfLines={1}
+          >
             {displayContent}
           </Text>
         </View>
